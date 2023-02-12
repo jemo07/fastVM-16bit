@@ -13,32 +13,34 @@ Word code[MAX_CODE_SIZE];
 int code_pointer = 0;
 
 enum Operations {
-  DROP,
-  EXIT,
-  BRANCH,
-  DUP,
-  FETCH,
-  LIT,
-  R_FROM,
-  R_FETCH,
-  TO_R,
-  STORE,
-  ENTER,
-  OVER,
-  AND,
-  ZERO_LESS,
-  SWAP,
-  COND_BRANCH,
-  UM_PLUS
+  VM_NEXT
+  VM_EXCECUTE
+  VM_DROP,
+  VM_EXIT,
+  VM_BRANCH,
+  VM_DUP,
+  VM_FETCH,
+  VM_LIT,
+  VM_R_FROM,
+  VM_R_FETCH,
+  VM_TO_R,
+  VM_STORE,
+  VM_ENTER,
+  VM_OVER,
+  VM_AND,
+  VM_ZERO_LESS,
+  VM_SWAP,
+  VM_COND_BRANCH,
+  VM_UM_PLUS
 };
 
-void NEXT(void) {
+void VM_NEXT(void) {
   ++code_pointer;
 }
 
-void EXECUTE(void) {
+void VM_EXECUTE(void) {
   switch (code[code_pointer]) {
-    case DROP: {
+    case VM_DROP: {
       --stack_pointer;
       break;
     }
@@ -46,78 +48,78 @@ void EXECUTE(void) {
       exit(0);
       break;
     }
-    case BRANCH: {
+    case VM_BRANCH: {
       code_pointer = stack[--stack_pointer];
       break;
     }
-    case DUP: {
+    case VM_DUP: {
       stack[stack_pointer] = stack[stack_pointer - 1];
       ++stack_pointer;
       break;
     }
-    case FETCH: {
+    case VM_FETCH: {
       stack[stack_pointer] = code[stack[stack_pointer - 1]];
       ++stack_pointer;
       break;
     }
-    case LIT: {
+    case VM_LIT: {
       ++code_pointer;
       stack[stack_pointer] = code[code_pointer];
       ++stack_pointer;
       break;
     }
-    case R_FROM: {
+    case VM_R_FROM: {
       --stack_pointer;
       break;
     }
-    case R_FETCH: {
+    case VM_R_FETCH: {
       stack[stack_pointer] = stack[stack_pointer - 1];
       ++stack_pointer;
       break;
     }
-    case TO_R: {
+    case VM_TO_R: {
       --stack_pointer;
       break;
     }
-    case STORE: {
+    case VM_STORE: {
       code[stack[--stack_pointer]] = stack[stack_pointer - 1];
       stack_pointer -= 2;
       break;
     }
-    case ENTER: {
+    case VM_ENTER: {
       stack[stack_pointer] = code_pointer;
       ++stack_pointer;
       code_pointer = stack[stack_pointer - 2];
       break;
     }
-    case OVER: {
+    case VM_OVER: {
       stack[stack_pointer] = stack[stack_pointer - 2];
       ++stack_pointer;
       break;
     }
-    case AND: {
+    case VM_AND: {
       stack[stack_pointer - 2] = stack[stack_pointer - 2] & stack[stack_pointer - 1];
       --stack_pointer;
       break;
     }
-    case ZERO_LESS: {
+    case VM_ZERO_LESS: {
       stack[stack_pointer - 1] = (stack[stack_pointer - 1] == 0) ? 1 : 0;
       break;
     }
-    case SWAP: {
+    case VM_SWAP: {
       Word temp = stack[stack_pointer - 1];
       stack[stack_pointer - 1] = stack[stack_pointer - 2];
       stack[stack_pointer - 2] = temp;
       break;
     }
-    case COND_BRANCH: {
+    case VM_COND_BRANCH: {
       if (stack[stack_pointer - 1] == 0) {
         code_pointer = stack[stack_pointer - 2];
       }
       stack_pointer -= 2;
       break;
     }
-    case UM_PLUS: {
+    case VM_UM_PLUS: {
       stack[stack_pointer - 2] = stack[stack_pointer - 2] + stack[stack_pointer - 1];
       --stack_pointer;
       break;
